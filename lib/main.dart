@@ -26,15 +26,18 @@ class RandomWordsState extends State<RandomWords>{
         
         final index = i ~/ 2;
 
-        if(index == 0){
-          print(index);
-          return _buildTop(_suggestions[index]);
-        }
-        if(index >= _suggestions.length){
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
+        if(index <= 3){
+          if(index >= _suggestions.length){
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
 
-        return _buildRow(_suggestions[index]);
+          if(index == 0){
+            //print(index);
+            return _buildTop(_suggestions[index]);
+          }
+
+          return _buildRow(_suggestions[index]);
+          }
       }
     );
   }
@@ -47,21 +50,22 @@ class RandomWordsState extends State<RandomWords>{
         color: _topSaved ? Colors.red : null,
       ),
       onTap: (){
+          setState(() {
+              _topSaved = !_topSaved;
 
-        setState((){
-          _topSaved = !_topSaved;
-
-          // _suggestions.forEach((c)=>
-          //   _topSaved?_saved.add(c):_saved.remove(c)
-          // );
-        });
-        
-        print("top");
+              _suggestions.forEach(
+                (c) => _topSaved?_saved.add(c):_saved.remove(c)
+              );
+          });
+          print("top");
       },
     );
   }
 
   Widget _buildRow(WordPair pair){
+    if(_topSaved){
+      _saved.add(pair);
+    }
     final alreadySaved = _saved.contains(pair);
 
     return new ListTile(
@@ -84,9 +88,23 @@ class RandomWordsState extends State<RandomWords>{
 
           if(alreadySaved){
             _saved.remove(pair);
+
+            _topSaved = false;
           }else{
             _saved.add(pair);
+
+            var _topSaved2 = true;
+            _suggestions.forEach(
+              (c){
+                if(!_saved.contains(c)){
+                  _topSaved2 = false;
+                }
+              }
+            );
+            print(_topSaved2);
+            _topSaved = _topSaved2;
           }
+
 
         });
       },
